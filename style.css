@@ -1,0 +1,32 @@
+#board-container {
+    width: 64vw;
+    height: 64vw;
+    display: flex;
+    flex-wrap: wrap;
+    border: 2px solid black;
+}
+
+.square {
+    width: 8vw;
+    height: 8vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.square.light-square {
+    background: beige;
+}
+
+.square.dark-square {
+    background: brown;
+}
+
+.square.selected-square {
+    background: yellow;
+}
+
+.pieces {
+    width: 8vw;
+    height: 8vw;
+}
