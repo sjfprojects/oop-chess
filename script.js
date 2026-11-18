@@ -1,12 +1,32 @@
+//selection and movement
+//fix notation for black
+//turns and game loop
+//capturing
+//check
+//mate
+//special moves
+//computer
+
+
+/*
+click on piece
+ -> valid moves higlighted (isSelected)
+ -> click on square
+ -> move piece, update piece/board
+ -> previous move still highlighted
+*/
+
 class Piece {
     colour;
 
     constructor(pieceColour) {
         this.colour = pieceColour;
+        this.isSelected = false;
+        this.element = null;
     }
 
-    getColour() {
-        console.log(`Piece colour is ${this.colour}`);
+    movePiece(from, to) {
+
     }
 }
 
@@ -53,99 +73,169 @@ class King extends Piece {
 class Pawn extends Piece {
     type = "p";
 
-    getValidMoves(board) {
-
+    getValidMoves(board, row, col) {
+        //check moves
+        const validMoves = [board[row - 1][col], board[row - 2][col]];
+        return validMoves;
     }
 }
 
-function isEven(n) {
-    if (n%2 == 0) {
-        return true;
-    } else return false;
+class Square {
+    constructor(row, col) {
+        this.row = row;
+        this.col = col;
+        this.notation = "abcdefgh"[col] + (8 - row);
+        this.piece = null;
+        this.isLight = (row + col) % 2 === 0;
+        this.isSelected = false;
+        this.element = document.createElement("div");
+    }
+}
+
+function createSquares() {
+    let board = [];
+
+    for (i = 0; i < 8; i++) {
+        let rows = [];
+        for (j = 0; j < 8; j++) {
+            rows.push(new Square(i, j));
+        }
+        board.push(rows);
+    }
+
+    return board;
 }
 
 class Board {
     constructor() {
-        this.square = [
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-        ];
         this.container = document.getElementById('board-container');
+        this.board = createSquares();
+
+        this.selectedPiece = null;
+        //this.selectedSquare = null;
     }
 
     setup() {
-        this.square[0][0] = new Rook("b");
-        this.square[0][1] = new Knight("b");
-        this.square[0][2] = new Bishop("b");
-        this.square[0][3] = new Queen("b");
-        this.square[0][4] = new King("b");
-        this.square[0][5] = new Bishop("b");
-        this.square[0][6] = new Knight("b");
-        this.square[0][7] = new Rook("b");
-
-        this.square[1][0] = new Pawn("b");
-        this.square[1][1] = new Pawn("b");
-        this.square[1][2] = new Pawn("b");
-        this.square[1][3] = new Pawn("b");
-        this.square[1][4] = new Pawn("b");
-        this.square[1][5] = new Pawn("b");
-        this.square[1][6] = new Pawn("b");
-        this.square[1][7] = new Pawn("b");
-
-        this.square[6][0] = new Pawn("w");
-        this.square[6][1] = new Pawn("w");
-        this.square[6][2] = new Pawn("w");
-        this.square[6][3] = new Pawn("w");
-        this.square[6][4] = new Pawn("w");
-        this.square[6][5] = new Pawn("w");
-        this.square[6][6] = new Pawn("w");
-        this.square[6][7] = new Pawn("w");
-
-        this.square[7][0] = new Rook("w");
-        this.square[7][1] = new Knight("w");
-        this.square[7][2] = new Bishop("w");
-        this.square[7][3] = new Queen("w");
-        this.square[7][4] = new King("w");
-        this.square[7][5] = new Bishop("w");
-        this.square[7][6] = new Knight("w");
-        this.square[7][7] = new Rook("w");
-    }
-
-    render() {
-        let selectedSquare = null;
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                const square = document.createElement('div');
-                if (isEven(i) == isEven(j)) {
+                let currentSquare = this.board[
+                    playerColour == 'w' ? i : 7 - i
+                ][
+                    playerColour == 'w' ? j : 7 - j
+                ];
+
+                const square = currentSquare.element;
+
+                if (currentSquare.isLight) {
                     square.classList = 'square light-square';
                 } else square.classList = 'square dark-square';
                 this.container.append(square);
+            }
+        }
+
+        //pieces
+        {
+            this.board[0][1].piece = new Knight("b");
+            this.board[0][0].piece = new Rook("b");
+            this.board[0][2].piece = new Bishop("b");
+            this.board[0][3].piece = new Queen("b");
+            this.board[0][4].piece = new King("b");
+            this.board[0][5].piece = new Bishop("b");
+            this.board[0][6].piece = new Knight("b");
+            this.board[0][7].piece = new Rook("b");
+
+            this.board[1][0].piece = new Pawn("b");
+            this.board[1][1].piece = new Pawn("b");
+            this.board[1][2].piece = new Pawn("b");
+            this.board[1][3].piece = new Pawn("b");
+            this.board[1][4].piece = new Pawn("b");
+            this.board[1][5].piece = new Pawn("b");
+            this.board[1][6].piece = new Pawn("b");
+            this.board[1][7].piece = new Pawn("b");
+
+            this.board[6][0].piece = new Pawn("w");
+            this.board[6][1].piece = new Pawn("w");
+            this.board[6][2].piece = new Pawn("w");
+            this.board[6][3].piece = new Pawn("w");
+            this.board[6][4].piece = new Pawn("w");
+            this.board[6][5].piece = new Pawn("w");
+            this.board[6][6].piece = new Pawn("w");
+            this.board[6][7].piece = new Pawn("w");
+
+            this.board[7][0].piece = new Rook("w");
+            this.board[7][1].piece = new Knight("w");
+            this.board[7][2].piece = new Bishop("w");
+            this.board[7][3].piece = new Queen("w");
+            this.board[7][4].piece = new King("w");
+            this.board[7][5].piece = new Bishop("w");
+            this.board[7][6].piece = new Knight("w");
+            this.board[7][7].piece = new Rook("w");
+        }
+    }
+
+    render() {
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                let currentSquare = this.board[
+                    playerColour == 'w' ? i : 7 - i
+                ][
+                    playerColour == 'w' ? j : 7 - j
+                ];
+                const square = currentSquare.element;
 
                 const icon = document.createElement('img');
                 icon.classList = 'pieces';
-
-                if (this.square[i][j] != null) {
-                    icon.src = `./pieces/${this.square[i][j].colour}${this.square[i][j].type}.svg`;
+                if (currentSquare.element.childElementCount != 0) continue;
+                if (currentSquare.piece != null) {
+                    icon.src = `./pieces/${currentSquare.piece.colour}${currentSquare.piece.type}.svg`;
                     square.append(icon);
+                    currentSquare.piece.element = icon;
+                }
+
+                if (currentSquare.piece?.colour == playerColour) {
                     square.addEventListener('click', () => {
-                        if (selectedSquare) {
-                            selectedSquare.classList.remove('selected-square');
+                        if (this.selectedPiece != currentSquare.piece && this.selectedPiece != null) {
+                            this.selectedPiece.isSelected = false;
+                            this.selectedPiece.element.parentNode.classList.remove('selected-square');
                         }
+                        this.selectedPiece = currentSquare.piece;
+                        currentSquare.piece.isSelected = true;
                         square.classList.add('selected-square');
-                        selectedSquare = square;
-                    })
+                        
+                        const validMoves = this.selectedPiece.getValidMoves(this.board, currentSquare.row, currentSquare.col);
+                        document.querySelectorAll('.circle').forEach(c => c.remove());
+                        for (i = 0; i < validMoves.length; i++) {
+                            const circle = document.createElement("div");
+                            circle.classList.add('circle');
+                            validMoves[i].element.append(circle);
+                        }
+                    });
                 }
             }
         }
     }
 }
 
-const board = new Board();
-board.setup();
-board.render();
+function setPlayerColour(colour) {
+   playerColour = colour;
+   document.getElementById("start-button").disabled = false;
+}
+
+class Game {
+    constructor() {
+        this.player = playerColour;
+        //this.turn = "w";
+
+        const board = new Board(this.player);
+        board.setup();
+        board.render();
+    }
+}
+
+function start() {
+    document.getElementById("white-button").disabled = true;
+    document.getElementById("random-button").disabled = true;
+    document.getElementById("black-button").disabled = true;
+    document.getElementById("start-button").disabled = true;
+    new Game;
+}

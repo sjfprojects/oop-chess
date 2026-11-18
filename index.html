@@ -11,8 +11,10 @@
 
     <body>
         <h1>Chess</h1>
-        <div id="board-container">
-
-        </div>
+        <button id="white-button" onclick="setPlayerColour('w')">White</button>
+        <button id="random-button" onclick="setPlayerColour(Math.random() < 0.5 ? 'w' : 'b')">Random</button>
+        <button id="black-button" onclick="setPlayerColour('b')">Black</button>
+        <button id="start-button" onclick="start()" disabled>Start</button>
+        <div id="board-container"></div>
     </body>
 </html>

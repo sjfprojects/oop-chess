@@ -23,10 +23,18 @@
 }
 
 .square.selected-square {
-    background: yellow;
+    box-shadow: inset 0 0 0 100px rgba(255, 255, 0, 0.75);
 }
 
 .pieces {
     width: 8vw;
     height: 8vw;
+}
+
+.circle {
+    border-radius: 50%;
+    width: 3vw;
+    height: 3vw;
+    background-color: black;
+    opacity: 50%;
 }
